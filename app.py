@@ -56,7 +56,7 @@ def get_quote():
 @app.route('/ai-workout')
 def ai_workout():
     try:
-        prompt = "Give me a full body workout plan for today, make it only 1 paragraph, generate a gif or a picture of the workout"
+        prompt = "Give me a workout for today, make it only 1 paragraph, generate a gif or a picture of the workout"
         response = model.generate_content(prompt)
         return jsonify({"workout": response.text})
     except Exception as e:
