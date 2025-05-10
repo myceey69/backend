@@ -1,9 +1,14 @@
 from flask import Flask, jsonify
 from flask_cors import CORS
 import random
+import google.generativeai as genai
 
 app = Flask(__name__)
 CORS(app)  # Allow all origins
+
+# Configure Gemini AI
+genai.configure(api_key="AIzaSyAIu8QNSVxgTNZJ5bS_FfN_7Wn3A5Cg3gM")
+model = genai.GenerativeModel(model_name="gemini-1.5-flash")
 
 # Route 1: Static todo
 @app.route('/todos/1')
@@ -19,11 +24,6 @@ def get_todo():
 def get_quote():
     quotes = [
         "Believe you can and you're halfway there. —Theodore Roosevelt",
-        "The best way to get started is to quit talking and begin doing. —Walt Disney",
-        "Don’t let yesterday take up too much of today. —Will Rogers",
-        "It always seems impossible until it’s done. —Nelson Mandela",
-        "Push yourself, because no one else is going to do it for you."
-          "Believe you can and you're halfway there. —Theodore Roosevelt",
         "The best way to get started is to quit talking and begin doing. —Walt Disney",
         "Don’t let yesterday take up too much of today. —Will Rogers",
         "It always seems impossible until it’s done. —Nelson Mandela",
@@ -45,7 +45,6 @@ def get_quote():
         "When you feel like quitting, think about why you started.",
         "Excuses don’t burn calories.",
         "Strength doesn’t come from what you can do. It comes from overcoming what you once thought you couldn’t.",
-        "The only bad workout is the one you didn’t do.",
         "The gym is not just a place, it’s a mindset.",
         "Champions are made in the gym."
     ]
@@ -53,5 +52,15 @@ def get_quote():
         "quote": random.choice(quotes)
     })
 
+# ✅ Route 3: AI-generated workout
+@app.route('/ai-workout')
+def ai_workout():
+    try:
+        prompt = "Give me a full body workout plan for today"
+        response = model.generate_content(prompt)
+        return jsonify({"workout": response.text})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
